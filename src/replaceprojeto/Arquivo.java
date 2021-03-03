@@ -42,7 +42,7 @@ public class Arquivo {
             boolean hasInject = procurarPorInject(arquivo);
             System.out.println("Arquivo" + (hasInject ? " " : " NÃO ") + "possui inject do AtePacEHVariables. " + (ADICIONAR_INJECT_ATEPACVARIABLES && !hasInject ? "Adicionando..." : ""));
 
-            if (ADICIONAR_INJECT_ATEPACVARIABLES) {
+            if (ADICIONAR_INJECT_ATEPACVARIABLES && !hasInject ) {
                 int first = arquivo.indexOf("export default class");
                 int chaves = arquivo.indexOf("{", first);
                 String definicaoClasse = arquivo.substring(first, chaves + 1);
@@ -243,7 +243,6 @@ public class Arquivo {
 
 //        System.out.println("ultimaLinha: " + ultimaLinha);
 //        System.out.println("proximaLinha: " + proximaLinha);
-
         boolean flag
                 = ultimaLinha.contains("cleanListeners")
                 || ultimaLinha.contains("fireDeferredEvent")

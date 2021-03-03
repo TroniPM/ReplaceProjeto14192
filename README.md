@@ -3,20 +3,20 @@
 Parser para replace em massa para passagem de novo parâmetro.
 
 # Configurações
-   - Para adicionar inject automaticamente **ReplaceProjeto.ADICIONAR_INJECT_ATEPACVARIABLES**. Caso **false**, não será adicionado:
+   - Para adicionar inject automaticamente **ReplaceProjeto.ADICIONAR_INJECT_ATEPACVARIABLES** (padrão = **true**). Caso **false**, não será adicionado:
 ```javascript
   @Inject('AtePacEHVariables')
   atePacEHVariables;
 ```
 
-   - Para adicionar método auxiliar para fazer a chamada posteriormente **ReplaceProjeto.ADICIONAR_METODO_AUXILIAR**. Caso **false**, não será adicionado:
+   - Para adicionar método auxiliar para fazer a chamada posteriormente **ReplaceProjeto.ADICIONAR_METODO_AUXILIAR** (padrão = **true**). Caso **false**, não será adicionado:
 ```javascript
   getWLDFocused() {
     return this.atePacEHVariables.getCurrentLinkedData();
   }
 ```
 
-   - Para sobrescrever arquivo original por arquivo modificado **ReplaceProjeto.SOBRESCREVER_ARQUIVO_ORIGINAL**. Caso **false**, irá salvar o arquivo com mesmo nome no diretório **C:/**.
+   - Para sobrescrever arquivo original por arquivo modificado **ReplaceProjeto.SOBRESCREVER_ARQUIVO_ORIGINAL** (padrão = **true**). Caso **false**, irá salvar o arquivo com mesmo nome no diretório **C:/**.
 
    - Para escolher os arquivos onde será feito as modificações, basta alterar o array **ReplaceProjeto.FILES**.
 

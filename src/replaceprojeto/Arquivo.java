@@ -42,7 +42,7 @@ public class Arquivo {
             boolean hasInject = procurarPorInject(arquivo);
             System.out.println("Arquivo" + (hasInject ? " " : " NÃO ") + "possui inject do AtePacEHVariables. " + (ADICIONAR_INJECT_ATEPACVARIABLES && !hasInject ? "Adicionando..." : ""));
 
-            if (ADICIONAR_INJECT_ATEPACVARIABLES && !hasInject ) {
+            if (ADICIONAR_INJECT_ATEPACVARIABLES && !hasInject) {
                 int first = arquivo.indexOf("export default class");
                 int chaves = arquivo.indexOf("{", first);
                 String definicaoClasse = arquivo.substring(first, chaves + 1);
@@ -177,6 +177,13 @@ public class Arquivo {
             }
 
             int start = target.lastIndexOf("});");
+
+            if (start == -1) {
+                EVENTS_MULTIPLELINE_COUNT--;
+                EVENTS_IGNORED_COUNT++;
+                return arquivo;
+            }
+
 //            String toReplace = "}" + PATTERN_LINKEDDATA_MULTIPLELINE + ";";;
             String newText = target.substring(0, start) + PATTERN_LINKEDDATA_MULTIPLELINE + target.substring(start + 3);
 

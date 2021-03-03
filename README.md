@@ -20,6 +20,19 @@ Parser para replace em massa para passagem de novo parâmetro.
 
    - Para escolher os arquivos onde será feito as modificações, basta alterar o array **ReplaceProjeto.FILES**.
 
+# Exceções
+Caso na mesma linha do pattern ```.events.``` exista as seguintes chamadas, o evento não será modificado:
+   - getAttribute 
+   - cleanListeners
+   - fireDeferredEvent
+   - fireEvent
+   - fireEventAsync
+   - getListeners
+   - removeListener
+
+# Observações
+Verificar manualmente classe que possuir ```Eventos ignorados > 0``` no log parar se certificar que eventos foram ignorados por conta das ```Exceções``` e não por conta de mal funcionamento do Parser.
+
 # Exemplos
 Única linha:
 ```javascript
@@ -82,13 +95,3 @@ Caso sem definição de array com atributos ['....'].
       this.method(detail, 'ATRIBUTO');
     }, this.getWLDFocused());
 ```
-
-# Exceções
-Caso na mesma linha do pattern ```.events.``` exista as seguintes chamadas, o evento não será modificado:
-   - getAttribute 
-   - cleanListeners
-   - fireDeferredEvent
-   - fireEvent
-   - fireEventAsync
-   - getListeners
-   - removeListener

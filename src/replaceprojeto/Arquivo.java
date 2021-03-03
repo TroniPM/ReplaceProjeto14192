@@ -18,6 +18,7 @@ public class Arquivo {
     public int EVENTS_COUNT = 0;
     public int EVENTS_INLINE_COUNT = 0;
     public int EVENTS_MULTIPLELINE_COUNT = 0;
+    public int EVENTS_IGNORED_COUNT = 0;
 
     public String fileAbsolutePath = null;
     public String arquivo = null;
@@ -36,6 +37,7 @@ public class Arquivo {
             System.out.println("Eventos encontrados: " + EVENTS_COUNT);
             System.out.println("Eventos inline: " + EVENTS_INLINE_COUNT);
             System.out.println("Eventos multiplelines: " + EVENTS_MULTIPLELINE_COUNT);
+            System.out.println("Eventos ignorados: " + EVENTS_IGNORED_COUNT);
 
             boolean hasInject = procurarPorInject(arquivo);
             System.out.println("Arquivo" + (hasInject ? " " : " NÃO ") + "possui inject do AtePacEHVariables. " + (ADICIONAR_INJECT_ATEPACVARIABLES && !hasInject ? "Adicionando..." : ""));
@@ -77,6 +79,7 @@ public class Arquivo {
         EVENTS_COUNT = 0;
         EVENTS_INLINE_COUNT = 0;
         EVENTS_MULTIPLELINE_COUNT = 0;
+        EVENTS_IGNORED_COUNT = 0;
     }
 
     private String checarArquivoPorPatternEventos(String arquivo) {
@@ -129,6 +132,14 @@ public class Arquivo {
     public String schemeInline(String arquivo, int eventIndex, int posicaoPontoVirgula) {
         String target = arquivo.substring(eventIndex).substring(0, posicaoPontoVirgula + 1);
 
+        if (ignorarEvent(arquivo, target)) {
+            EVENTS_INLINE_COUNT--;
+            return arquivo;
+        } else if (definicaoDeEventPorHandlerDeAtributo(arquivo, target)) {
+            EVENTS_INLINE_COUNT--;
+            return arquivo;
+        }
+
         int ultimoParentese = target.lastIndexOf(")");
         String newText = target.substring(0, ultimoParentese) + PATTERN_LINKEDDATA_INLINE + target.substring(ultimoParentese + 1, target.length());
 //            System.out.println("ANTES: " + target);
@@ -142,15 +153,13 @@ public class Arquivo {
 
         String definicao = arquivo.substring(eventIndex).substring(0, endingPattern + 3);
 
-        int countAnexadores = 0; // ( ) [ ] { }
+        // anexadores ( ) [ ] { }
         int anexadorPAberto = definicao.length() - definicao.replace("(", "").length();
         int anexadorPFechado = definicao.length() - definicao.replace(")", "").length();
         int anexadorCAberto = definicao.length() - definicao.replace("[", "").length();
         int anexadorCFechado = definicao.length() - definicao.replace("]", "").length();
         int anexadorChAberto = definicao.length() - definicao.replace("{", "").length();
         int anexadorChFechado = definicao.length() - definicao.replace("}", "").length();
-
-        countAnexadores = anexadorPAberto + anexadorPFechado + anexadorCAberto + anexadorCFechado + anexadorChAberto + anexadorChFechado;
 
         if (anexadorPAberto == anexadorPFechado
                 && anexadorCAberto == anexadorCFechado
@@ -159,12 +168,20 @@ public class Arquivo {
 
             String target = arquivo.substring(eventIndex).substring(0, endingPattern + 3);
 
+            if (ignorarEvent(arquivo, target)) {
+                EVENTS_MULTIPLELINE_COUNT--;
+                return arquivo;
+            } else if (definicaoDeEventPorHandlerDeAtributo(arquivo, target)) {
+                EVENTS_MULTIPLELINE_COUNT--;
+                return arquivo;
+            }
+
             int start = target.lastIndexOf("});");
 //            String toReplace = "}" + PATTERN_LINKEDDATA_MULTIPLELINE + ";";;
             String newText = target.substring(0, start) + PATTERN_LINKEDDATA_MULTIPLELINE + target.substring(start + 3);
 
 //            System.out.println("TARGET: " + target);
-//            System.out.println("REPLACE: " + newString);
+//            System.out.println("REPLACE: " + newText);
             return arquivo.replace(target, newText);
         } else {
 //            System.out.println("Anexadores: " + countAnexadores);;
@@ -187,5 +204,64 @@ public class Arquivo {
                 + "  }\r\n";
 
         return aux;
+    }
+
+    public boolean definicaoDeEventPorHandlerDeAtributo(String arquivo, String target) {
+        String antes = arquivo.substring(0, arquivo.indexOf(target));
+
+        final String pattern = "@@!123!@@";
+        String linhasAntes[] = antes.replaceAll("\r\n", pattern).replaceAll("\n\r", pattern).replaceAll("\r", pattern).replaceAll(pattern, "\n").split("\n");
+
+        String ultimaLinha = linhasAntes[linhasAntes.length - 1];
+//        System.out.println("ULTIMA LINHA ANTES: " + antes);
+//        System.out.println("ultimaLinha: " + ultimaLinha);
+
+        String aux = ultimaLinha.replaceAll("getAttribute[\\(\\'\\w\\)\\.\\s]*events", "");
+
+        if (ultimaLinha.length() != aux.length()) {
+            EVENTS_IGNORED_COUNT++;
+//            System.out.println("************************");
+//            System.out.println("ANTES: " + ultimaLinha);
+//            System.out.println("APOS : " + aux);
+//            System.out.println("************************");
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean ignorarEvent(String arquivo, String target) {
+        String antes = arquivo.substring(0, arquivo.indexOf(target));
+        String depois = arquivo.substring(arquivo.indexOf(target), arquivo.length() - 1);
+
+        final String pattern = "@@!123!@@";
+        String linhasAntes[] = antes.replaceAll("\r\n", pattern).replaceAll("\n\r", pattern).replaceAll("\r", pattern).replaceAll(pattern, "\n").split("\n");
+        String linhasDepois[] = depois.replaceAll("\r\n", pattern).replaceAll("\n\r", pattern).replaceAll("\r", pattern).replaceAll(pattern, "\n").split("\n");
+
+        String ultimaLinha = linhasAntes[linhasAntes.length - 1];
+        String proximaLinha = linhasDepois[0];
+
+//        System.out.println("ultimaLinha: " + ultimaLinha);
+//        System.out.println("proximaLinha: " + proximaLinha);
+
+        boolean flag
+                = ultimaLinha.contains("cleanListeners")
+                || ultimaLinha.contains("fireDeferredEvent")
+                || ultimaLinha.contains("fireEvent")
+                || ultimaLinha.contains("fireEventAsync")
+                || ultimaLinha.contains("getListeners")
+                || ultimaLinha.contains("removeListener")
+                || proximaLinha.contains("cleanListeners")
+                || proximaLinha.contains("fireDeferredEvent")
+                || proximaLinha.contains("fireEvent")
+                || proximaLinha.contains("fireEventAsync")
+                || proximaLinha.contains("getListeners")
+                || proximaLinha.contains("removeListener");
+
+        if (flag) {
+            EVENTS_IGNORED_COUNT++;
+        }
+
+        return flag;
     }
 }

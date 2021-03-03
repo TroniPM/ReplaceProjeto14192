@@ -17,7 +17,8 @@ public class ReplaceProjeto {
 
     public static String[] FILES = new String[]{
         "C:\\GitHub\\tasy\\src\\app\\atePac\\commons\\vitalSignsGeneric\\VitalSignsGenericMonitoring.js",
-        "C:\\GitHub\\tasy\\src\\app\\atePac\\commons\\vitalSignsAndMonitoring\\vitalSignsAndGeneralMonitoring\\AtendimentoSinalVital.js"
+        "C:\\GitHub\\tasy\\src\\app\\atePac\\commons\\vitalSignsAndMonitoring\\vitalSignsAndGeneralMonitoring\\AtendimentoSinalVital.js",
+        "C:\\GitHub\\tasy\\src\\app\\atePac\\commons\\diagnoses\\encounter-diagnosis\\DiagnosticoDoencaEncounter.js"
     };
 
     public static void main(String[] args) {

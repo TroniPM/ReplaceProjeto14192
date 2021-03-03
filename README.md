@@ -82,3 +82,13 @@ Caso sem definição de array com atributos ['....'].
       this.method(detail, 'ATRIBUTO');
     }, this.getWLDFocused());
 ```
+
+# Exceções
+Caso na mesma linha do pattern ```.events.``` exista as seguintes chamadas, o evento não será modificado:
+   - getAttribute 
+   - cleanListeners
+   - fireDeferredEvent
+   - fireEvent
+   - fireEventAsync
+   - getListeners
+   - removeListener

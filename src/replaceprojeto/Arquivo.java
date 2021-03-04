@@ -207,7 +207,7 @@ public class Arquivo {
     public String getMetodoAuxiliar() {
         String aux
                 = "  getWLDFocused() {\r\n"
-                + "    return this.atePacEHVariables.getCurrentLinkedData();\r\n"
+                + "    return this.atePacEHVariables.getCurrentLinkedFocused();\r\n"
                 + "  }\r\n";
 
         return aux;
